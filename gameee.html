@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HOW WEIRD ARE YOU?</title>
+  <link rel="stylesheet" href="style.css">
+<style type="text/css" id="dcoder_stylesheet">/* Basic Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Body and Font Style */
+body {
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(to right, #ff6a00, #ffcc00);
+  color: #fff;
+}
+
+/* Hidden Class */
+.hidden {
+  display: none;
+}
+
+/* Start Page Styling */
+#start-page {
+  text-align: center;
+  padding: 50px;
+}
+
+#start-btn {
+  font-size: 20px;
+  padding: 10px 20px;
+  background-color: #ffcc00;
+  color: #333;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+#start-btn:hover {
+  background-color: #ff6a00;
+}
+
+/* Quiz Page Styling */
+#quiz-container {
+  padding: 20px;
+}
+
+#timer-container {
+  margin-bottom: 20px;
+}
+
+#progress-bar {
+  width: 100%;
+  height: 10px;
+  background-color: #fff;
+  border-radius: 5px;
+  margin-top: 5px;
+}
+
+#progress {
+  height: 100%;
+  width: 0%;
+  background-color: #ffcc00;
+}
+
+#question-list {
+  margin-top: 20px;
+}
+
+.question {
+  margin-bottom: 20px;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+option input {
+  margin-right: 10px;
+}
+
+/* Results Styling */
+#results {
+  text-align: center;
+}
+
+button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #ffcc00;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #ff6a00;
+}</style></head>
+<body>
+  <!-- Start Page -->
+  <div id="start-page">
+    <h1>Welcome to the Ultimate Quirky Challenge!</h1>
+    <p>Click below to begin the challenge.</p>
+    <button id="start-btn">Start</button>
+    <div id="extra-info">
+      <p>Let’s find out just how weird you are...</p>
+    </div>
+  </div>
+
+  <!-- Quiz Page -->
+  <div id="quiz-container" class="hidden">
+    <h1>HOW WEIRD ARE YOU?</h1>
+    <p>Take the quiz and discover your quirky personality!</p>
+
+    <!-- Timer Animation -->
+    <div id="timer-container">
+      <p>Time remaining: <span id="timer">36</span> sec</p>
+      <div id="progress-bar">
+        <div id="progress"></div>
+      </div>
+    </div>
+
+    <!-- Quiz Form -->
+    <form id="question-form">
+      <div id="question-list"></div>
+      <button type="submit" id="submit-btn">Weirdness %</button>
+    </form>
+
+    <!-- Results Section -->
+    <div id="results" class="hidden">
+      <h2>Your Results</h2>
+      <p id="result-text"></p>
+      <p>Weirdness Level: <span id="weirdness-percentage"></span>%</p>
+      <button id="share-btn">Share Your Results!</button>
+      <button id="challenge-btn">Challenge a Friend!</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+
+<script type="text/javascript" id="dcoder_script">const questions = [
+  { question: "What's your favorite color?", options: ["Red", "Blue", "Green", "Yellow"] },
+  { question: "Pick a pet.", options: ["Cat", "Dog", "Rabbit", "Fish"] },
+  { question: "What's your ideal vacation?", options: ["Beach", "Mountain", "City", "Countryside"] },
+  { question: "Choose a superpower.", options: ["Invisibility", "Flying", "Teleportation", "Time Travel"] },
+  { question: "Your favorite season?", options: ["Spring", "Summer", "Autumn", "Winter"] },
+  { question: "Which fruit do you like?", options: ["Apple", "Banana", "Mango", "Grapes"] },
+  { question: "Choose a hobby.", options: ["Reading", "Sports", "Painting", "Music"] },
+  { question: "What's your ideal animal?", options: ["Lion", "Elephant", "Horse", "Eagle"] },
+  { question: "What’s your favorite food?", options: ["Pizza", "Sushi", "Burger", "Pasta"] },
+  { question: "Pick a superhero.", options: ["Batman", "Spider-Man", "Iron Man", "Wonder Woman"] }
+];
+
+function getRandomQuestions() {
+  let shuffledQuestions = questions.sort(() => Math.random() - 0.5);
+  return shuffledQuestions.slice(0, 7);
+}
+
+function renderQuestions() {
+  const questionList = document.getElementById('question-list');
+  const randomQuestions = getRandomQuestions();
+  questionList.innerHTML = '';
+
+  randomQuestions.forEach((question, index) => {
+    const questionElement = document.createElement('div');
+    questionElement.classList.add('question');
+
+    const questionTitle = document.createElement('h2');
+    questionTitle.textContent = `${index + 1}. ${question.question}`;
+    questionElement.appendChild(questionTitle);
+
+    question.options.forEach(option => {
+      const optionElement = document.createElement('div');
+      optionElement.classList.add('option');
+
+      const radioButton = document.createElement('input');
+      radioButton.type = 'radio';
+      radioButton.name = `question-${index}`;
+      radioButton.value = option;
+
+      const optionLabel = document.createElement('label');
+      optionLabel.textContent = option;
+
+      optionElement.appendChild(radioButton);
+      optionElement.appendChild(optionLabel);
+      questionElement.appendChild(optionElement);
+    });
+
+    questionList.appendChild(questionElement);
+  });
+}
+
+function updateProgressBar() {
+  const totalQuestions = 7;
+  const progress = document.querySelectorAll('input[type="radio"]:checked').length;
+  const progressPercentage = (progress / totalQuestions) * 100;
+  document.getElementById('progress').style.width = `${progressPercentage}%`;
+}
+
+function startTimer() {
+  let timeLeft = 36;
+  const timerElement = document.getElementById('timer');
+
+  const timerInterval = setInterval(() => {
+    timeLeft--;
+    timerElement.textContent = `Time left: ${timeLeft}s`;
+
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      calculateResults();
+    }
+  }, 1000);
+}
+
+function handleFormSubmit(event) {
+  event.preventDefault();
+  
+  const answers = [];
+  const questions = document.querySelectorAll('.question');
+  
+  questions.forEach((question, index) => {
+    const selectedOption = question.querySelector('input[type="radio"]:checked');
+    if (selectedOption) {
+      answers.push({
+        question: question.querySelector('h2').textContent,
+        answer: selectedOption.value
+      });
+    }
+  });
+
+  if (answers.length === 7) {
+    document.getElementById('question-form').classList.add('hidden');
+    document.getElementById('results').classList.remove('hidden');
+    document.getElementById('result-text').textContent = `Thanks for completing the quiz! You are quirky because you like ${answers[0].answer}.`;
+
+    const timeTaken = 36 - parseInt(document.getElementById('timer').textContent.split(':')[1]);
+    const weirdnessPercentage = Math.max(0, (timeTaken / 6));
+
+    document.getElementById('weirdness-percentage').textContent = `${weirdnessPercentage.toFixed(2)}%`;
+  } else {
+    alert("Please answer all the questions.");
+  }
+}
+
+document.getElementById('start-btn').addEventListener('click', () => {
+  document.getElementById('start-page').classList.add('hidden');
+  document.getElementById('quiz-container').classList.remove('hidden');
+  renderQuestions();
+  startTimer();
+});
+
+document.getElementById('question-form').addEventListener('submit', handleFormSubmit);</script></body></html>
